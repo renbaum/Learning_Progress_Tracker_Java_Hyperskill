@@ -1,23 +1,42 @@
 package tracker;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class StudentContainer{
-    List<Student> students;
+    LinkedHashSet<Student> students;
     Scanner sc = new Scanner(System.in);
+    int uniqueID = 10000;
+    static StudentContainer instance;
 
     public StudentContainer(){
-        students = new ArrayList<>();
+        students = new LinkedHashSet<>();
+        instance = this;
     }
 
-    private void addStudent(String input){
+    public static boolean existUser(int studentId) {
+        for(Student s: instance.students){
+            if(s.studentID == studentId) return true;
+        }
+        return false;
+    }
+
+    public static int existUser(String studentId) {
+        try {
+            int studentIdInt = Integer.parseInt(studentId);
+            for (Student s : instance.students) {
+                if (s.studentID == studentIdInt) return studentIdInt;
+            }
+        }catch (Exception e) {}
+        throw new IllegalArgumentException(String.format("No student is found for id=%s.", studentId));
+    }
+
+    void addStudent(String input){
         try {
             Student s = new Student(input);
-            students.add(s);
+            if(!students.add(s)) throw new Exception("This email is already taken.");
+            s.setStudentID(uniqueID++);
             System.out.println("The student has been added.");
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -37,18 +56,47 @@ class StudentContainer{
         int newNumberOfStudents = students.size();
         System.out.printf("Total %d students have been added.\n", newNumberOfStudents - actNumberOfStudents);
     }
+
+    public void printList() {
+        if(students.isEmpty()){
+            System.out.println("No students found");
+            return;
+        }
+        System.out.println("Students:");
+        for(Student s : students){
+            System.out.println(s.studentID);
+        }
+    }
 }
 
 public class Student{
     String firstName;
     String lastName;
     String email;
+    int studentID;
 
     public Student(String firstName, String lastName, String email){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         checkWithException();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || !(obj instanceof Student)) {
+            return false;
+        }
+        Student student = (Student) obj;
+        return Objects.equals(email, student.email);
+    }
+
+    @Override
+    public int hashCode(){
+        return this.email.hashCode();
     }
 
     public Student(String oneLiner){
@@ -66,11 +114,10 @@ public class Student{
         this.email = parts[parts.length-1];
         checkWithException();
     }
-    public boolean checkWithException(){
+    public void checkWithException(){
         if(!checkName(this.firstName)){ throw new IllegalArgumentException("Incorrect first name."); }
         if(!checkName(this.lastName)){ throw new IllegalArgumentException("Incorrect last name."); }
         if(!checkEmail(this.email)){ throw new IllegalArgumentException("Incorrect email."); }
-        return true;
     }
 
     public boolean check(){
@@ -98,5 +145,9 @@ public class Student{
 
     public boolean checkCredentials(){
         return checkName(firstName) && checkName(lastName);
+    }
+
+    public void setStudentID(int i) {
+        studentID = i;
     }
 }
