@@ -39,6 +39,9 @@ public class Main {
                 case "statistics":
                     courses.statistics();
                     break;
+                case "notify":
+                    courses.notifyStudents();
+                    break;
                 default:
                     System.out.println("Error: unknown command!");
                     break;

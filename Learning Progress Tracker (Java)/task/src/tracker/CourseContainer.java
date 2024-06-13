@@ -211,11 +211,21 @@ public class CourseContainer{
 
     }
 
+    public void notifyStudents() {
+        Set<Integer> counter = new HashSet<>();
+        for(Course course : courses){
+            counter.addAll(course.notifyStudents());
+        }
+        System.out.printf("Total %d students have been notified.\n", counter.size());
+
+    }
 }
 
 class Course{
     String name;
     Map<Integer, Integer> points;
+    List<Integer> notifiedStudent;
+
     int maxPoints = 0;
     int activity = 0;
 
@@ -223,6 +233,7 @@ class Course{
         this.name = name;
         this.maxPoints = maxPoints;
         points = new HashMap<>();
+        notifiedStudent = new ArrayList<>();
     }
 
     public void addPoints(int studentId, int points) {
@@ -268,5 +279,20 @@ class Course{
 
     public String getName() {
         return this.name;
+    }
+
+    public Set<Integer> notifyStudents() {
+        Set<Integer> studentIds = new HashSet<>()
+                ;
+        for(Map.Entry<Integer, Integer> entry : points.entrySet()){
+            if(entry.getValue() >= maxPoints){
+                if(!notifiedStudent.contains(entry.getKey())) {
+                    StudentContainer.notifyStudent(entry.getKey(), name);
+                    notifiedStudent.add(entry.getKey());
+                    studentIds.add(entry.getKey());
+                }
+            }
+        }
+        return studentIds;
     }
 }

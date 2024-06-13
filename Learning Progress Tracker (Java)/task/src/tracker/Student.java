@@ -32,6 +32,20 @@ class StudentContainer{
         throw new IllegalArgumentException(String.format("No student is found for id=%s.", studentId));
     }
 
+    public Student getStudent(int studentId) {
+        for (Student s : students) {
+            if (s.studentID == studentId) return s;
+        }
+        return null;
+    }
+
+    public static void notifyStudent(Integer key, String course) {
+        Student s = instance.getStudent(key);
+        System.out.printf("To: %s\n", s.email);
+        System.out.println("Re: Your Learning Progress");
+        System.out.printf("Hello, %s %s! You have accomplished our %s course!\n", s.firstName, s.lastName, course);
+    }
+
     void addStudent(String input){
         try {
             Student s = new Student(input);
