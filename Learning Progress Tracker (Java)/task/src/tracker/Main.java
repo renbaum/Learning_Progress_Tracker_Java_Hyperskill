@@ -36,6 +36,9 @@ public class Main {
                 case "find":
                     courses.findAllPoints();
                     break;
+                case "statistics":
+                    courses.statistics();
+                    break;
                 default:
                     System.out.println("Error: unknown command!");
                     break;
